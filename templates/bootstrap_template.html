@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entregas</title>
+    <link rel="stylesheet" href='{{ url_for('static', filename='bootstrap.css') }}'
+</head>
+<body>
+<div class="container">
+    <ul class="nav nav-underline bg-body-secondary">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Início</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/gerenciar">Gerenciar</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+        </li>
+    </ul>
+</div>
+{% block conteudo %} {% endblock %}
+</body>
+</html>
