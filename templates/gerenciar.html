@@ -1,45 +1,101 @@
 {% extends "bootstrap_template.html" %}
+
+{% macro render_card(href, icon_file, alt_text, titulo) %}
+    <a href="{{ href }}" class="text-decoration-none mb-4 d-block">
+        <div class="card text-bg-light">
+            <div class="card-body d-flex align-items-center">
+                <img src="../static/icons/{{ icon_file }}"
+                     class="me-3"
+                     alt="{{ alt_text }}"
+                     width="100" height="100">
+                <h3 class="card-title mb-0 text-dark">{{ titulo }}</h3>
+            </div>
+        </div>
+    </a>
+{% endmacro %}
+
 {% block conteudo %}
 <div class="container text-center mt-4">
     <div class="row">
-        Qual entidade deseja gerenciar?
+        <h1>Qual entidade deseja gerenciar?</h1>
     </div>
-    <div class="row">
-        <div class="col">
-            <div class="row">
-                CLIENTES
-            </div>
-            <div class="row">
-                PEDIDOS
-            </div>
-            <div class="row">
-                AVALIAÇÕES
-            </div>
-            <div class="row">
-                RESPOSTAS
-            </div>
+
+    <div class="row mt-4">
+
+        <div class="col md-4">
+            {{ render_card(
+                href="/gerenciar_clientes",
+                icon_file = "clientes_icon.svg",
+                alt_text = "Clientes",
+                titulo = "CLIENTES")
+            }}
+
+            {{ render_card(
+                href="/gerenciar_pedidos",
+                icon_file = "pedidos_icon.svg",
+                alt_text = "Pedidos",
+                titulo = "PEDIDOS")
+            }}
+
+            {{ render_card(
+                href="gerenciar_classes_produtos",
+                icon_file = "classes_produtos_icon.svg",
+                alt_text = "Classes de Produtos",
+                titulo = "CLASSES DE PRODUTOS")
+            }}
         </div>
-        <div class="col">
-            <div class="row">
-                ESTABELECIMENTOS
-            </div>
-            <div class="row">
-                CATEGORIAS DE ESTABELECIMENTOS
-            </div>
-            <div class="row">
-                PRODUTOS
-            </div>
+
+        <div class="col-md-4">
+            {{ render_card(
+                href="/gerenciar_estabelecimentos",
+                icon_file="estabelecimentos_icon.svg",
+                alt_text="Estabelecimentos",
+                titulo="ESTABELECIMENTOS")
+            }}
+
+            {{ render_card(
+                href="/gerenciar_categorias",
+                icon_file="categorias_icon.svg",
+                alt_text="Categorias",
+                titulo="CATEGORIAS DE ESTABELECIMENTO")
+            }}
+
+            {{ render_card(
+                href="/gerenciar_produtos",
+                icon_file="produtos_icon.svg",
+                alt_text="PRODUTOS",
+                titulo="PRODUTOS")
+            }}
         </div>
-        <div class="col">
-            <div class="row">
-                ENTREGADORES
-            </div>
-            <div class="row">
-                QUESTÕES DE AVALIAÇÃO
-            </div>
-            <div class="row">
-                CLASSES DE PRODUTOS
-            </div>
+
+        <div class="col-md-4">
+            {{ render_card(
+                href="/gerenciar_entregadores",
+                icon_file="entregadores_icon.svg",
+                alt_text="Entregadores",
+                titulo="ENTREGADORES")
+            }}
+
+            {{ render_card(
+                href="/gerenciar_perguntas",
+                icon_file="perguntas_icon.svg",
+                alt_text="PERGUNTAS",
+                titulo="PERGUNTAS DE AVALIAÇÃO")
+            }}
+
+            {{ render_card(
+                href="/gerenciar_avaliacoes",
+                icon_file="avaliacoes_icon.svg",
+                alt_text="Avaliações",
+                titulo="AVALIAÇÕES")
+            }}
+
+            {{ render_card(
+                href="/gerenciar_respostas",
+                icon_file="respostas_icon.svg",
+                alt_text="Respostas",
+                titulo="RESPOSTAS")
+            }}
         </div>
     </div>
 </div>
