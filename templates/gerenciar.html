@@ -2,8 +2,8 @@
 
 {% macro render_card(href, icon_file, alt_text, titulo) %}
     <a href="{{ href }}" class="text-decoration-none mb-4 d-block">
-        <div class="card text-bg-light">
-            <div class="card-body d-flex align-items-center">
+        <div class="card text-bg-light rounded-4 shadow-sm">
+            <div class="card-body d-flex align-items-center bg-light">
                 <img src="../static/icons/{{ icon_file }}"
                      class="me-3"
                      alt="{{ alt_text }}"
