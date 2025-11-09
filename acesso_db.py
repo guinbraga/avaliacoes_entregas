@@ -25,9 +25,9 @@ class DBManager:
             with conn.cursor() as cur:
                try:
                    cur.execute("""
-                               INSERT INTO estabelecimentos (nome, cnpj)
+                               INSERT INTO estabelecimentos (nome, cnpj, endereco)
                                values (%s, %s) RETURNING id_estabelecimento;""",
-                               (estabelecimento.nome, estabelecimento.cnpj)
+                               (estabelecimento.nome, estabelecimento.cnpj, estabelecimento.endereco)
                                )
                    id_estabelecimento = cur.fetchone()[0]
                    estabelecimento.id = id_estabelecimento
@@ -57,7 +57,7 @@ class DBManager:
                                 INSERT INTO clientes (cpf, endereco, sexo, nome)
                                 VALUES (%s, %s, %s, %s) RETURNING id_cliente;
                                 """,
-                                (cliente.cpf, cliente.endereco, cliente.genero, cliente.nome)
+                                (cliente.cpf, cliente.endereco, cliente.sexo, cliente.nome)
                     )
                     id_cliente = cur.fetchone()[0]
                     cliente.id = id_cliente
@@ -216,3 +216,139 @@ class DBManager:
                 except Exception as e:
                     print(e)
                     conn.rollback()
+
+    def buscar_perguntas(self, alvo_avaliacao):
+        """ Retorna uma lista de objetos Pergunta """
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute("""
+                                SELECT id_questao, enunciado_questao, tipo_resposta, alvo_avaliacao
+                                FROM questoes WHERE alvo_avaliacao = (%s)
+                                """, (alvo_avaliacao,)
+                    )
+                    perguntas = cur.fetchall()
+                    lista_perguntas = []
+                    for pergunta in perguntas:
+                        instancia = Pergunta(pergunta[0], pergunta[1], pergunta[2], pergunta[3])
+                        lista_perguntas.append(instancia)
+
+                except Exception as e:
+                    print(e)
+                    return None
+
+        return lista_perguntas
+
+    def buscar_pedidos_para_avaliar(self):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute("""
+                                SELECT p.id_pedido, p.data_hora, p.status,
+                                    e.id_estabelecimento, e.cnpj, e.nome AS nome_estabelecimento, e.endereco AS endereco_estabelecimento,
+                                    en.id_entregador, en.nome AS nome_entregador, en.cpf AS cpf_entregador,
+                                    c.id_cliente, c.cpf AS cliente_cpf, c.endereco AS cliente_endereco, c.sexo, c.nome AS cliente_nome
+                                FROM pedidos p 
+                                JOIN estabelecimentos e ON p.id_estabelecimento = e.id_estabelecimento
+                                JOIN clientes c ON p.id_cliente = c.id_cliente
+                                JOIN entregadores en ON p.id_entregador = en.id_entregador
+                                WHERE p.status = 'Concluído'
+                                """)
+                    query = cur.fetchall()
+                    lista_pedidos = []
+                    for resultado in query:
+                        estabelecimento_obj = Estabelecimento(
+                            id=resultado[3], cnpj=resultado[4], nome=resultado[5], endereco=resultado[6]
+                        )
+                        entregador_obj = Entregador(
+                            id=resultado[7], nome=resultado[8], cpf=resultado[9]
+                        )
+                        cliente_obj = Cliente(
+                            id=resultado[10], cpf=resultado[11], endereco=resultado[12], sexo=resultado[13], nome=resultado[14]
+                        )
+                        pedido_obj = Pedido(
+                            id=resultado[0],
+                            estabelecimento_obj=estabelecimento_obj,
+                            entregador_obj=entregador_obj,
+                            cliente_obj=cliente_obj,
+                            data_hora=resultado[1],
+                            status=resultado[2]
+                        )
+                        lista_pedidos.append(pedido_obj)
+                except Exception as e:
+                    print(e)
+                    return None
+
+        return lista_pedidos
+
+    def buscar_pedido_por_id(self, id_pedido):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute("""
+                                    SELECT p.id_pedido, p.data_hora, p.status,
+                                        e.id_estabelecimento, e.cnpj, e.nome AS estabelecimento_nome, e.endereco AS endereco_estabelecimento,
+                                        en.id_entregador, en.nome AS nome_entregador, en.cpf AS cpf_entregador,
+                                        c.id_cliente, c.cpf AS cliente_cpf, c.endereco AS cliente_endereco, c.sexo, c.nome AS cliente_nome
+                                    FROM pedidos p
+                                    JOIN estabelecimentos e ON p.id_estabelecimento = e.id_estabelecimento
+                                    JOIN entregadores en ON p.id_entregador = en.id_entregador
+                                    JOIN clientes c ON p.id_cliente = c.id_cliente
+                                    WHERE p.id_pedido = (%s)
+                    """, (id_pedido,)
+                    )
+
+                    resultado = cur.fetchone()
+                    if not resultado:
+                        print(f"Nenhum pedido encontrado com {id_pedido}")
+                        return None
+
+                    estabelecimento_obj = Estabelecimento(
+                        id=resultado[3], cnpj=resultado[4], nome=resultado[5], endereco=resultado[6]
+                    )
+
+                    entregador_obj = Entregador(
+                        id=resultado[7], nome=resultado[8], cpf=resultado[9]
+                    )
+
+                    cliente_obj = Cliente(
+                        id=resultado[10], cpf=resultado[11], endereco=resultado[12], sexo=resultado[13], nome=resultado[14]
+                    )
+
+                    pedido_obj = Pedido(
+                        id=resultado[0], data_hora=resultado[1], status=resultado[2],
+                        estabelecimento_obj=estabelecimento_obj,
+                        entregador_obj=entregador_obj,
+                        cliente_obj=cliente_obj
+                    )
+                except Exception as e:
+                    print(e)
+                    return None
+
+        return pedido_obj
+
+    def buscar_pergunta_por_id(self, id_pergunta):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute("""
+                                    SELECT id_questao, enunciado_questao, tipo_resposta, alvo_avaliacao 
+                                    FROM questoes WHERE id_questao = (%s)
+                                """,(id_pergunta,)
+                    )
+
+                    resultado = cur.fetchone()
+                    if not resultado:
+                        print(f"Nenhuma pergunta encontrada com id {id_pergunta}.")
+                        return None
+
+                    pergunta_obj = Pergunta(
+                        id=resultado[0], enunciado_pergunta=resultado[1],
+                        tipo_resposta=resultado[2], alvo_avaliacao=resultado[3]
+                    )
+
+                except Exception as e:
+                    print(e)
+                    return None
+
+        return pergunta_obj

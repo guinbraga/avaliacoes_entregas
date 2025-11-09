@@ -1,9 +1,9 @@
 class Cliente:
-    def __init__(self, id, cpf, endereco, genero, nome):
+    def __init__(self, id, cpf, endereco, sexo, nome):
         self.id = id
         self.cpf = cpf
         self.endereco = endereco
-        self.genero = genero
+        self.sexo = sexo
         self.nome = nome
 
 class Entregador:
@@ -13,10 +13,11 @@ class Entregador:
         self.nome = nome
 
 class Estabelecimento:
-    def __init__(self, id, cnpj, nome):
+    def __init__(self, id, cnpj, nome, endereco):
         self.id = id
         self.cnpj = cnpj
         self.nome = nome
+        self.endereco = endereco
 
 class Classe_produto:
     def __init__(self, tipo_produto, classificacao_pai):
