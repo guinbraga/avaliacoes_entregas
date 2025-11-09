@@ -24,28 +24,28 @@ class Classe_produto:
         self.classificacao_pai = classificacao_pai
 
 class Item:
-    def __init__(self, id, nome, valor_base, classe_produto, id_estabelecimento):
+    def __init__(self, id, nome, valor_base, classe_produto_obj, estabelecimento_obj):
         self.id = id
         self.nome = nome
         self.valor_base = valor_base
-        self.classe_produto = classe_produto
-        self.id_estabelecimento = id_estabelecimento
+        self.classe_produto = classe_produto_obj
+        self.estabelecimento = estabelecimento_obj
 
 class Pedido:
-    def __init__(self, id, id_estabelecimento, id_cliente, data_hora, status, id_entregador):
+    def __init__(self, id, estabelecimento_obj, cliente_obj, data_hora, status, entregador_obj):
         self.id = id
-        self.id_estabelecimento = id_estabelecimento
-        self.id_cliente = id_cliente
+        self.estabelecimento = estabelecimento_obj
+        self.cliente = cliente_obj
         self.data_hora = data_hora
         self.status = status
-        self.id_entregador = id_entregador
+        self.entregador = entregador_obj
 
 class Item_pedido:
-    def __init__(self, id, id_item_pedido, id_pedido, id_item, quantidade, preco_unidade):
+    def __init__(self, id, item_pedido_obj, pedido_obj, item_obj, quantidade, preco_unidade):
         self.id = id
-        self.id_item_pedido = id_item_pedido
-        self.id_pedido = id_pedido
-        self.id_item = id_item
+        self.item_pedido_obj = item_pedido_obj
+        self.pedido = pedido_obj
+        self.item = item_obj
         self.quantidade = quantidade
         self.preco_unidade = preco_unidade
 
@@ -55,9 +55,9 @@ class Categoria:
         self.categoria = categoria
 
 class Categoria_estabelecimento:
-    def __init__(self, id_estabelecimento, id_categoria):
-        self.id_estabelecimento = id_estabelecimento
-        self.id_categoria = id_categoria
+    def __init__(self, estabelecimento_obj, categoria_obj):
+        self.estabelecimento = estabelecimento_obj
+        self.categoria = categoria_obj
 
 class Pergunta:
     def __init__(self, id, enunciado_pergunta, tipo_resposta, alvo_avaliacao):
@@ -67,15 +67,15 @@ class Pergunta:
         self.alvo_avaliacao = alvo_avaliacao
 
 class Avaliacao:
-    def __init__(self, id, data_hora, id_pedido):
+    def __init__(self, id, data_hora, pedido_obj):
         self.id = id
         self.data_hora = data_hora
-        self.id_pedido = id_pedido
+        self.pedido = pedido_obj
 
 class Resposta:
-    def __init__(self, id, id_avaliacao, id_questao, id_item_pedido, valor_resposta):
+    def __init__(self, id, avaliacao_obj, questao_obj, item_pedido_obj, valor_resposta):
         self.id = id
-        self.id_avaliacao = id_avaliacao
-        self.id_questao = id_questao
-        self.id_item_pedido = id_item_pedido
+        self.avaliacao = avaliacao_obj
+        self.questao = questao_obj
+        self.item_pedido = item_pedido_obj
         self.valor_resposta = valor_resposta

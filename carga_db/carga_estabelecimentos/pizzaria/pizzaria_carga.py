@@ -1,6 +1,5 @@
-# SCRIPT QUE ADICIONA ALGUMAS CAFETERIAS AO BD
-# NÃO RODAR NOVAMENTE!
-from db import get_db_connection
+# SCRIPT QUE ADICIONA ALGUMAS PIZZARIAS AO BD
+from acesso_db import get_db_connection
 from faker import Faker
 
 # Adicionei a constraint de unique nome para não termos problemas caso o script seja rodado novamente>

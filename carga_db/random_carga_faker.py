@@ -1,7 +1,7 @@
 from faker import Faker
 import random
 import psycopg
-from db import get_db_connection
+from acesso_db import get_db_connection
 
 
 def criar_clientes_aleatorios(conn, n_clientes):
