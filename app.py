@@ -24,6 +24,10 @@ def cadastrar_perguntas():
 
     return render_template("cadastro_perguntas.html")
 
+@app.route("/pedido/avaliar/<int:id_pedido>")
+def avaliar_pedido(id_pedido):
+    pedido = db.buscar_pedido_por_id(id_pedido)
+    itens_pedido = db.buscar_itens_pedido_por_id(id_pedido)
 
 
 app.run(debug=True)

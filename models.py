@@ -44,9 +44,8 @@ class Pedido:
         self.entregador = entregador_obj
 
 class Item_pedido:
-    def __init__(self, id, item_pedido_obj, pedido_obj, item_obj, quantidade, preco_unidade):
+    def __init__(self, id, pedido_obj, item_obj, quantidade, preco_unidade):
         self.id = id
-        self.item_pedido_obj = item_pedido_obj
         self.pedido = pedido_obj
         self.item = item_obj
         self.quantidade = quantidade

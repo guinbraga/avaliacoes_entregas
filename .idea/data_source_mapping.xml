@@ -3,5 +3,6 @@
   <component name="DataSourcePerFileMappings">
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/13509f43-01b9-4aff-b75b-99335a4f835d/console.sql" value="13509f43-01b9-4aff-b75b-99335a4f835d" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/13509f43-01b9-4aff-b75b-99335a4f835d/console_1.sql" value="13509f43-01b9-4aff-b75b-99335a4f835d" />
+    <file url="file://$PROJECT_DIR$/carga_db/carga_estabelecimentos/cafeteria/itens_cafeteria_carga.py" value="13509f43-01b9-4aff-b75b-99335a4f835d" />
   </component>
 </project>
