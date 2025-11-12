@@ -146,6 +146,7 @@ class DBManager:
                     pedido.id = id_pedido
                     conn.commit()
                 except Exception as e:
+                    print("Erro ao inserir pedido:")
                     print(e)
                     conn.rollback()
 
@@ -352,3 +353,71 @@ class DBManager:
                     return None
 
         return pergunta_obj
+
+    def buscar_entregador_por_id(self, id_entregador):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute("""
+                                    SELECT id_entregador, cpf, nome FROM entregadores
+                                        WHERE id_entregador = (%s)
+                                        """, (id_entregador,)
+                    )
+
+                    resultado = cur.fetchone()
+                    if resultado:
+                        entregador_obj = Entregador(resultado[0], resultado[1], resultado[2])
+                        return entregador_obj
+
+                    else:
+                        return None
+
+                except Exception as e:
+                    print(e)
+                    return None
+
+    def buscar_estabelecimento_por_id(self, id_estabelecimento):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute("""
+                                SELECT id_estabelecimento, cnpj, nome, endereco
+                                FROM estabelecimentos
+                                WHERE id_estabelecimento = (%s)
+                                """, (id_estabelecimento,)
+                                )
+
+                    resultado = cur.fetchone()
+                    if resultado:
+                        estabelecimento_obj = Estabelecimento(resultado[0], resultado[1], resultado[2], resultado[3])
+                        return estabelecimento_obj
+
+                    else:
+                        return None
+
+                except Exception as e:
+                    print(e)
+                    return None
+
+    def buscar_cliente_por_id(self, id_cliente):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute("""
+                                SELECT id_cliente, cpf, endereco, sexo, nome
+                                FROM clientes
+                                WHERE id_cliente = (%s)
+                                """, (id_cliente,)
+                                )
+
+                    resultado = cur.fetchone()
+                    if resultado:
+                        cliente_obj = Cliente(resultado[0], resultado[1], resultado[2], resultado[3], resultado[4])
+                        return cliente_obj
+
+                    else:
+                        return None
+
+                except Exception as e:
+                    print(e)
+                    return None

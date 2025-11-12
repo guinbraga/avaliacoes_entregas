@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 class Cliente:
     def __init__(self, id, cpf, endereco, sexo, nome):
         self.id = id
@@ -33,7 +35,7 @@ class Item:
         self.estabelecimento = estabelecimento_obj
 
 class Pedido:
-    def __init__(self, id, estabelecimento_obj, cliente_obj, data_hora, status, entregador_obj):
+    def __init__(self, id, estabelecimento_obj, cliente_obj, status, entregador_obj, data_hora=datetime.now(timezone.utc)):
         self.id = id
         self.estabelecimento = estabelecimento_obj
         self.cliente = cliente_obj

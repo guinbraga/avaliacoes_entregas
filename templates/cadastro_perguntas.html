@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CADASTRO DE PERGUNTAS</title>
+</head>
+<body>
+    <form>
+        <label for="enunciado_pergunta">Enunciado da Pergunta:</label>
+        <input type="text" id="enunciado_pergunta" name="enunciado_pergunta" value="Insira o enunciado da pergunta..."><br>
+        <label for="tipo_resposta">Tipo da resposta:</label>
+        <select id="tipo_resposta" name="tipo_resposta">
+            <option value="nota_1_5">Nota 1 - 5</option>
+            <option value="select_tag">Selecionar Tags</option>
+            <option value="texto_descritivo">Texto Descritivo</option>
+            <option value="sim_nao">Sim/Não</option>
+        </select><br>
+        <label for="alvo_avaliacao">Alvo da Avaliação:</label>
+        <select id="alvo_avaliacao" name="alvo_avaliacao">
+            <option value="item_do_pedido">Item do pedido</option>
+            <option value="estabelecimento">Estabelecimento</option>
+            <option value="entregador">Entregador</option>
+            <option value="aplicativo">Aplicativo</option>
+        </select><br>
+        <button type="submit">Cadastrar Pergunta</button>
+    </form>
+
+</body>
+</html>
