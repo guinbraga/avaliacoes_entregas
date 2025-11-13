@@ -1,10 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Avaliação de Pedido</title>
-</head>
-<body>
+{% extends "bootstrap_template.html" %}
 
-</body>
-</html>
+{% block conteudo %}
+<div class="container">
+    <div class="row">
+        <div class="col-4 mt-4 mx-auto">
+            <h1>Pedido n.º {{pedido.id}}</h1>
+            <p>Realizado no estabelecimento {{pedido.estabelecimento.nome}}</p>
+            <p>Entregue por {{pedido.entregador.nome}}</p>
+            <h3> Itens do pedido: </h3>
+            <table class="table table-hover text-center">
+                <tr>
+                    <th>Item</th>
+                    <th>Quantidade</th>
+                    <th>Valor Unitário</th>
+                </tr>
+                {% for item in itens_pedido %}
+                <tr>
+                    <td>{{item.item.nome}}</td>
+                    <td>{{item.quantidade}}</td>
+                    <td>{{item.preco_unidade}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <p>Valor total: R$ {{total}}</p>
+        </div>
+
+
+        <div class="col-8 mt-4 mx-auto">
+            <h1 class="mx-auto align-content-center">Avaliação</h1>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

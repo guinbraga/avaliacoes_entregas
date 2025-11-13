@@ -145,6 +145,11 @@ class DBManager:
 
                     id_pedido = cur.fetchone()[0]
                     pedido.id = id_pedido
+
+                    # for item in itens_pedido:
+                    #     item.pedido_obj = pedido
+                    #
+
                     conn.commit()
 
                 except Exception as e:
@@ -478,7 +483,7 @@ class DBManager:
                     pedido_obj = self.buscar_pedido_por_id(id_pedido)
 
                     for item in resultado:
-                        item_obj = self.buscar_item_por_id(item[1])
+                        item_obj = self.buscar_item_por_id(item[2])
                         item_pedido = Item_pedido(item[0], pedido_obj, item_obj, item[3], item[4])
                         itens_pedido.append(item_pedido)
 
