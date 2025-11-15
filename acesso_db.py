@@ -239,16 +239,20 @@ class DBManager:
                     avaliacao.id = id_avaliacao
 
                     for resposta in respostas:
+                        id_item_pedido = resposta.item_pedido.id if resposta.item_pedido else None
+
                         try:
                             cur.execute("""
                                         INSERT INTO respostas (id_avaliacao, id_pergunta, id_item_pedido, valor_resposta)
                                         VALUES (%s, %s, %s, %s) RETURNING id_resposta;
                                         """,
-                                        (resposta.avaliacao.id, resposta.pergunta.id, resposta.item_pedido.id,
+                                        (avaliacao.id, resposta.pergunta.id, id_item_pedido,
                                          resposta.valor_resposta)
                                         )
                             id_resposta = cur.fetchone()[0]
                             resposta.id = id_resposta
+                            conn.commit()
+
                         except Exception as e:
                             print(e)
                             conn.rollback()
@@ -267,7 +271,7 @@ class DBManager:
                 try:
                     cur.execute("""
                                 SELECT id_pergunta, enunciado_pergunta, tipo_resposta, alvo_avaliacao
-                                FROM questoes WHERE alvo_avaliacao = (%s)
+                                FROM perguntas WHERE alvo_avaliacao = (%s)
                                 """, (alvo_avaliacao,)
                     )
                     perguntas = cur.fetchall()
@@ -379,7 +383,7 @@ class DBManager:
                 try:
                     cur.execute("""
                                     SELECT id_pergunta, enunciado_pergunta, tipo_resposta, alvo_avaliacao 
-                                    FROM questoes WHERE id_pergunta = (%s)
+                                    FROM perguntas WHERE id_pergunta = (%s)
                                 """,(id_pergunta,)
                     )
 
@@ -506,7 +510,7 @@ class DBManager:
                     print(e)
 
 
-    def buscar_itens_pedido_por_id(self, id_pedido):
+    def buscar_itens_pedido_por_id_pedido(self, id_pedido):
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 try:
@@ -526,6 +530,29 @@ class DBManager:
 
                 except Exception as e:
                     print(e)
+
+    def buscar_item_do_pedido_por_id(self, id_item_pedido):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute(""" SELECT id_item_pedido, id_pedido, id_item, quantidade, preco_unidade
+                                FROM itens_pedido WHERE id_item_pedido = (%s)""", (id_item_pedido,)
+                                )
+                    resultado = cur.fetchone()
+                    if not resultado:
+                        print(f"Nenhum item de pedido encontrado com id {id_item_pedido}")
+                        return None
+
+                    pedido_obj = self.buscar_pedido_por_id(resultado[1])
+                    item_obj = self.buscar_item_por_id(resultado[2])
+
+                    item_pedido = Item_pedido(resultado[0], pedido_obj, item_obj, resultado[3], resultado[4])
+
+                    return item_pedido
+
+                except Exception as e:
+                    print(e)
+                    return None
 
     def buscar_pergunta_aleatoria_por_alvo(self, alvo_avaliacao):
         with get_db_connection() as conn:

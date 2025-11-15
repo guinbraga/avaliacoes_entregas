@@ -30,39 +30,44 @@
         <div class="col-8 mt-4 mx-auto">
             <h1 class="mx-auto align-content-center">Avaliação</h1>
 
-            <form action="/avaliar/pedido/{{ pedido.id }}" method="POST">
+            <form action="/pedidos/avaliar/{{ pedido.id }}" method="POST">
 
                 {% if p_estabelecimento %}
+                    {% set nome_est = "resposta_est_" + p_estabelecimento.id|string %}
 
                     {% if p_estabelecimento.tipo_resposta == "nota_1_5" %}
-                        {{ render_respostas.nota_1_5(p_estabelecimento, 'resposta_est_') }}
+                        {{ render_respostas.nota_1_5(p_estabelecimento, nome_est) }}
 
                     {% elif p_estabelecimento.tipo_resposta == "sim_nao" %}
-                        {{ render_respostas.sim_nao(p_estabelecimento, 'resposta_est_') }}
+                        {{ render_respostas.sim_nao(p_estabelecimento, nome_est) }}
 
                     {% endif %}
 
                 {% endif %}
 
                 {% if p_entregador %}
+                    {% set nome_ent = "resposta_ent_" + p_entregador.id|string %}
 
                     {% if p_entregador.tipo_resposta == "nota_1_5" %}
-                        {{ render_respostas.nota_1_5(p_entregador, 'resposta_ent_') }}
+                        {{ render_respostas.nota_1_5(p_entregador, nome_ent) }}
 
                     {% elif p_entregador.tipo_resposta == "sim_nao" %}
-                        {{ render_respostas.sim_nao(p_entregador, 'resposta_ent_') }}
+                        {{ render_respostas.sim_nao(p_entregador, nome_ent) }}
 
                     {% endif %}
 
                 {% endif %}
 
-                {% for i in range(itens_pedido|length) %}
-                    <p>Item {{ itens_pedido[i].item.nome }}</p>
-                    {% if p_itens_pedido[i].tipo_resposta == "nota_1_5" %}
-                        {{ render_respostas.nota_1_5(p_itens_pedido[i], 'resposta_itmp_') }}
+                {% for p_item in p_itens_pedido %}
 
-                    {% elif p_itens_pedido[i].tipo_resposta == "sim_nao" %}
-                        {{ render_respostas.sim_nao(p_itens_pedido[i], 'resposta_itmp_') }}
+                    {% set nome_item = "resposta_item_" + p_item["id_item_pedido"]|string + "_" +  p_item["pergunta"].id|string %}
+
+                    <p>Sobre o item <b>{{ p_item["nome_item"] }}:</b></p>
+                    {% if p_item["pergunta"].tipo_resposta == "nota_1_5" %}
+                        {{ render_respostas.nota_1_5(p_item["pergunta"], nome_item) }}
+
+                    {% elif p_item["pergunta"].tipo_resposta == "sim_nao" %}
+                        {{ render_respostas.sim_nao(p_item["pergunta"], nome_item) }}
 
                     {% endif %}
 
@@ -70,11 +75,13 @@
 
                 {% if p_aplicativo %}
 
+                    {% set nome_app = "resposta_app_" + p_aplicativo.id|string %}
+
                     {% if p_aplicativo.tipo_resposta == "nota_1_5" %}
-                        {{ render_respostas.nota_1_5(p_aplicativo, 'resposta_app_') }}
+                        {{ render_respostas.nota_1_5(p_aplicativo, nome_app) }}
 
                     {% elif p_aplicativo.tipo_resposta == "sim_nao" %}
-                        {{ render_respostas.sim_nao(p_aplicativo, 'resposta_app_') }}
+                        {{ render_respostas.sim_nao(p_aplicativo, nome_app) }}
 
                     {% endif %}
 
