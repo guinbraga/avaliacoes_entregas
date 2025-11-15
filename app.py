@@ -27,6 +27,9 @@ def cadastrar_perguntas():
         return render_template("cadastro_perguntas.html")
 
 # @app.route("pedidos")
+# rota que mostraria a lista de pedidos e daria a opção para avaliar. farei se estiver com tempo
+# e ânimo sobrando no domingo.
+
 @app.route("/pedidos/avaliar/<int:id_pedido>", methods=["GET", "POST"])
 def avaliar_pedido(id_pedido):
 

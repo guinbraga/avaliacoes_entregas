@@ -251,20 +251,31 @@ class DBManager:
                                         )
                             id_resposta = cur.fetchone()[0]
                             resposta.id = id_resposta
-                            conn.commit()
 
                         except Exception as e:
                             print(e)
                             conn.rollback()
 
-                    conn.commit()
+                    try:
+                        cur.execute(
+                        """
+                        UPDATE pedidos
+                        SET status = 'Avaliado'
+                        WHERE id_pedido = %s
+                                    """, (avaliacao.pedido.id,))
+
+                        conn.commit()
+
+                    except Exception as e:
+                        print(e)
+                        conn.rollback()
 
                 except Exception as e:
                     print(e)
                     conn.rollback()
 
 
-    def buscar_perguntas(self, alvo_avaliacao):
+    def buscar_perguntas_por_alvo(self, alvo_avaliacao):
         """ Retorna uma lista de objetos Pergunta """
         with get_db_connection() as conn:
             with conn.cursor() as cur:
