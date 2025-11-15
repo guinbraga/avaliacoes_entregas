@@ -27,15 +27,32 @@ def cadastrar_perguntas():
         return render_template("cadastro_perguntas.html")
 
 # @app.route("pedidos")
-@app.route("/pedidos/avaliar/<int:id_pedido>")
+@app.route("/pedidos/avaliar/<int:id_pedido>", methods=["GET", "POST"])
 def avaliar_pedido(id_pedido):
-    pedido = db.buscar_pedido_por_id(id_pedido)
-    itens_pedido = db.buscar_itens_pedido_por_id(id_pedido)
-    valor_total_pedido = sum(item.quantidade * item.preco_unidade for item in itens_pedido)
-    return render_template("avaliar_pedido.html",
-                           pedido=pedido,
-                           itens_pedido=itens_pedido,
-                           total=valor_total_pedido)
+
+    if request.method == "GET":
+        pedido = db.buscar_pedido_por_id(id_pedido)
+        itens_pedido = db.buscar_itens_pedido_por_id(id_pedido)
+        valor_total_pedido = sum(item.quantidade * item.preco_unidade for item in itens_pedido)
+
+        p_entregador = db.buscar_pergunta_aleatoria_por_alvo("entregador")
+        p_estabelecimento = db.buscar_pergunta_aleatoria_por_alvo("estabelecimento")
+        p_aplicativo = db.buscar_pergunta_aleatoria_por_alvo("aplicativo")
+        p_itens_pedido = [db.buscar_pergunta_aleatoria_por_alvo("item_do_pedido") for _ in itens_pedido]
+
+        return render_template("avaliar_pedido.html",
+                               pedido=pedido,
+                               itens_pedido=itens_pedido,
+                               total=valor_total_pedido,
+                               p_entregador=p_entregador,
+                               p_estabelecimento=p_estabelecimento,
+                               p_aplicativo=p_aplicativo,
+                               p_itens_pedido=p_itens_pedido,
+                )
+
+    if request.method == "POST":
+        respostas = []
+
 
 
 app.run(debug=True)

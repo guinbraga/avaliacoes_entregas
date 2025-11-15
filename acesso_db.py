@@ -213,10 +213,10 @@ class DBManager:
             with conn.cursor() as cur:
                 try:
                     cur.execute("""
-                                INSERT INTO respostas (id_avaliacao, id_questao, id_item_pedido, valor_resposta)
+                                INSERT INTO respostas (id_avaliacao, id_pergunta, id_item_pedido, valor_resposta)
                                 VALUES (%s, %s, %s, %s) RETURNING id_resposta;
                                 """,
-                                (resposta.avaliacao.id, resposta.questao.id, resposta.item_pedido.id, resposta.valor_resposta)
+                                (resposta.avaliacao.id, resposta.pergunta.id, resposta.item_pedido.id, resposta.valor_resposta)
                     )
                     id_resposta = cur.fetchone()[0]
                     resposta.id = id_resposta
@@ -225,13 +225,48 @@ class DBManager:
                     print(e)
                     conn.rollback()
 
+    def salvar_avaliacao_atomica(self, avaliacao, respostas):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute("""
+                                INSERT INTO avaliacoes (data_hora, id_pedido)
+                                VALUES (%s, %s) RETURNING id_avaliacao;
+                                """,
+                                (avaliacao.data_hora, avaliacao.pedido.id)
+                    )
+                    id_avaliacao = cur.fetchone()[0]
+                    avaliacao.id = id_avaliacao
+
+                    for resposta in respostas:
+                        try:
+                            cur.execute("""
+                                        INSERT INTO respostas (id_avaliacao, id_pergunta, id_item_pedido, valor_resposta)
+                                        VALUES (%s, %s, %s, %s) RETURNING id_resposta;
+                                        """,
+                                        (resposta.avaliacao.id, resposta.pergunta.id, resposta.item_pedido.id,
+                                         resposta.valor_resposta)
+                                        )
+                            id_resposta = cur.fetchone()[0]
+                            resposta.id = id_resposta
+                        except Exception as e:
+                            print(e)
+                            conn.rollback()
+
+                    conn.commit()
+
+                except Exception as e:
+                    print(e)
+                    conn.rollback()
+
+
     def buscar_perguntas(self, alvo_avaliacao):
         """ Retorna uma lista de objetos Pergunta """
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 try:
                     cur.execute("""
-                                SELECT id_questao, enunciado_questao, tipo_resposta, alvo_avaliacao
+                                SELECT id_pergunta, enunciado_pergunta, tipo_resposta, alvo_avaliacao
                                 FROM questoes WHERE alvo_avaliacao = (%s)
                                 """, (alvo_avaliacao,)
                     )
@@ -343,8 +378,8 @@ class DBManager:
             with conn.cursor() as cur:
                 try:
                     cur.execute("""
-                                    SELECT id_questao, enunciado_questao, tipo_resposta, alvo_avaliacao 
-                                    FROM questoes WHERE id_questao = (%s)
+                                    SELECT id_pergunta, enunciado_pergunta, tipo_resposta, alvo_avaliacao 
+                                    FROM questoes WHERE id_pergunta = (%s)
                                 """,(id_pergunta,)
                     )
 
@@ -491,3 +526,27 @@ class DBManager:
 
                 except Exception as e:
                     print(e)
+
+    def buscar_pergunta_aleatoria_por_alvo(self, alvo_avaliacao):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute("""
+                                    SELECT id_pergunta, enunciado_pergunta, tipo_resposta, alvo_avaliacao
+                                    FROM perguntas 
+                                    WHERE alvo_avaliacao = (%s)
+                                    ORDER BY RANDOM()
+                                    LIMIT 1;""", (alvo_avaliacao,))
+
+                    resultado = cur.fetchone()
+                    if resultado:
+                        pergunta = Pergunta(resultado[0], resultado[1], resultado[2], resultado[3])
+                        return pergunta
+
+                    else:
+                        print(f"Pergunta não encontrada com alvo: {alvo_avaliacao}")
+                        return None
+
+                except Exception as e:
+                    print(e)
+                    return None

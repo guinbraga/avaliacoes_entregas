@@ -75,9 +75,9 @@ class Avaliacao:
         self.pedido = pedido_obj
 
 class Resposta:
-    def __init__(self, id, avaliacao_obj, questao_obj, item_pedido_obj, valor_resposta):
+    def __init__(self, id, avaliacao_obj, pergunta_obj, item_pedido_obj, valor_resposta):
         self.id = id
         self.avaliacao = avaliacao_obj
-        self.questao = questao_obj
+        self.pergunta = pergunta_obj
         self.item_pedido = item_pedido_obj
         self.valor_resposta = valor_resposta

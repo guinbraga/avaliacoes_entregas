@@ -1,0 +1,38 @@
+<!-- Nessas macros, name_prefix nos ajuda a estabelecer um name para lidar
+     com nossa controller app.py -->
+{% macro nota_1_5(pergunta, name_prefix) %}
+<div>
+    <label>{{ pergunta.enunciado_pergunta }}</label><br>
+    
+    {% set input_name = name_prefix + pergunta.id|string %}
+
+    <input type="radio" name="{{ input_name }}" value="1"> 1
+    <input type="radio" name="{{ input_name }}" value="2"> 2
+    <input type="radio" name="{{ input_name }}" value="3"> 3
+    <input type="radio" name="{{ input_name }}" value="4"> 4
+    <input type="radio" name="{{ input_name }}" value="5"> 5
+</div>
+{% endmacro %}
+
+
+{# Macro para renderizar perguntas de Texto Livre #}
+{% macro texto_livre(pergunta, name_prefix) %}
+<div>
+    <label>{{ pergunta.enunciado_pergunta }}</label><br>
+    
+    {% set input_name = name_prefix + pergunta.id|string %}
+    <textarea name="{{ input_name }}"></textarea>
+</div>
+{% endmacro %}
+
+
+{# Macro para renderizar perguntas "Sim/Não" #}
+{% macro sim_nao(pergunta, name_prefix) %}
+<div>
+    <label>{{ pergunta.enunciado_pergunta }}</label><br>
+    
+    {% set input_name = name_prefix + pergunta.id|string %}
+    <input type="radio" name="{{ input_name }}" value="sim"> Sim
+    <input type="radio" name="{{ input_name }}" value="nao"> Não
+</div>
+{% endmacro %}

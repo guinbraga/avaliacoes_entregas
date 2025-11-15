@@ -1,4 +1,5 @@
 {% extends "bootstrap_template.html" %}
+{% import "form_render_respostas.html" as render_respostas %}
 
 {% block conteudo %}
 <div class="container">
@@ -28,6 +29,59 @@
 
         <div class="col-8 mt-4 mx-auto">
             <h1 class="mx-auto align-content-center">Avaliação</h1>
+
+            <form action="/avaliar/pedido/{{ pedido.id }}" method="POST">
+
+                {% if p_estabelecimento %}
+
+                    {% if p_estabelecimento.tipo_resposta == "nota_1_5" %}
+                        {{ render_respostas.nota_1_5(p_estabelecimento, 'resposta_est_') }}
+
+                    {% elif p_estabelecimento.tipo_resposta == "sim_nao" %}
+                        {{ render_respostas.sim_nao(p_estabelecimento, 'resposta_est_') }}
+
+                    {% endif %}
+
+                {% endif %}
+
+                {% if p_entregador %}
+
+                    {% if p_entregador.tipo_resposta == "nota_1_5" %}
+                        {{ render_respostas.nota_1_5(p_entregador, 'resposta_ent_') }}
+
+                    {% elif p_entregador.tipo_resposta == "sim_nao" %}
+                        {{ render_respostas.sim_nao(p_entregador, 'resposta_ent_') }}
+
+                    {% endif %}
+
+                {% endif %}
+
+                {% for i in range(itens_pedido|length) %}
+                    <p>Item {{ itens_pedido[i].item.nome }}</p>
+                    {% if p_itens_pedido[i].tipo_resposta == "nota_1_5" %}
+                        {{ render_respostas.nota_1_5(p_itens_pedido[i], 'resposta_itmp_') }}
+
+                    {% elif p_itens_pedido[i].tipo_resposta == "sim_nao" %}
+                        {{ render_respostas.sim_nao(p_itens_pedido[i], 'resposta_itmp_') }}
+
+                    {% endif %}
+
+                {% endfor %}
+
+                {% if p_aplicativo %}
+
+                    {% if p_aplicativo.tipo_resposta == "nota_1_5" %}
+                        {{ render_respostas.nota_1_5(p_aplicativo, 'resposta_app_') }}
+
+                    {% elif p_aplicativo.tipo_resposta == "sim_nao" %}
+                        {{ render_respostas.sim_nao(p_aplicativo, 'resposta_app_') }}
+
+                    {% endif %}
+
+                {% endif %}
+
+                <button type="submit">Enviar Avaliação</button>
+            </form>
         </div>
     </div>
 
