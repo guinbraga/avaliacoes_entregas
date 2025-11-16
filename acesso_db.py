@@ -146,9 +146,14 @@ class DBManager:
                     id_pedido = cur.fetchone()[0]
                     pedido.id = id_pedido
 
-                    # for item in itens_pedido:
-                    #     item.pedido_obj = pedido
-                    #
+                    for item_pedido in itens_pedido:
+                        item_pedido.pedido_obj = pedido
+                        cur.execute("""
+                                    INSERT INTO itens_pedido (id_pedido, id_item, quantidade, preco_unidade)
+                                    VALUES (%s, %s, %s, %s) RETURNING id_item_pedido;
+                                    """, (item_pedido.pedido.id, item_pedido.item.id, item_pedido.quantidade, item_pedido.preco_unidade))
+                        id_item_pedido = cur.fetchone()[0]
+                        item_pedido.id = id_item_pedido
 
                     conn.commit()
 
@@ -229,6 +234,10 @@ class DBManager:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 try:
+
+                    if not respostas:
+                        raise ValueError("Avaliação não pode ser salva sem respostas!")
+
                     cur.execute("""
                                 INSERT INTO avaliacoes (data_hora, id_pedido)
                                 VALUES (%s, %s) RETURNING id_avaliacao;
@@ -255,6 +264,7 @@ class DBManager:
                         except Exception as e:
                             print(e)
                             conn.rollback()
+                            raise e
 
                     try:
                         cur.execute(
@@ -269,10 +279,12 @@ class DBManager:
                     except Exception as e:
                         print(e)
                         conn.rollback()
+                        raise e
 
                 except Exception as e:
                     print(e)
                     conn.rollback()
+                    raise e
 
 
     def buscar_perguntas_por_alvo(self, alvo_avaliacao):
@@ -315,6 +327,7 @@ class DBManager:
                     query = cur.fetchall()
                     if not query:
                         print("Nenhum pedido encontrado!")
+                        return None
                     else:
                         lista_pedidos = []
                         for resultado in query:
@@ -588,3 +601,77 @@ class DBManager:
                 except Exception as e:
                     print(e)
                     return None
+
+    def buscar_estabelecimentos_por_categoria(self, categoria):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute("""
+                                SELECT e.id_estabelecimento, e.cnpj, e.nome, e.endereco
+                                FROM estabelecimentos e 
+                                JOIN categorias_estabelecimento ce ON e.id_estabelecimento = ce.id_estabelecimento
+                                WHERE ce.id_categoria = (SELECT id_categoria FROM categorias
+                                                    WHERE categoria = (%s))
+                                """, (categoria,))
+                    resultado = cur.fetchall()
+                    if not resultado:
+                        print(f"Nenhum estabelecimento encontrado com categoria {categoria}")
+                    estabelecimentos = []
+                    for item in resultado:
+                        estabelecimento = Estabelecimento(item[0], item[1], item[2], item[3])
+                        estabelecimentos.append(estabelecimento)
+
+                    return estabelecimentos
+                except Exception as e:
+                    print(e)
+                    return None
+
+    def buscar_clientes(self):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute(""" SELECT * FROM clientes""")
+                    resultado = cur.fetchall()
+                    if not resultado:
+                        print(f"Nenhum cliente encontrado")
+                    clientes = []
+                    for item in resultado:
+                        cliente = Cliente(item[0], item[1], item[2], item[3], item[4])
+                        clientes.append(cliente)
+                    return clientes
+                except Exception as e:
+                    print(e)
+
+    def buscar_entregadores(self):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute(""" SELECT * FROM entregadores""")
+                    resultado = cur.fetchall()
+                    if not resultado:
+                        print(f"Nenhum cliente encontrado")
+                    entregadores = []
+                    for item in resultado:
+                        entregador = Entregador(item[0], item[1], item[2])
+                        entregadores.append(entregador)
+                    return entregadores
+                except Exception as e:
+                    print(e)
+
+    def buscar_mocca_por_estabelecimento(self, estabelecimento):
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute(""" SELECT * FROM itens
+                                    WHERE id_estabelecimento = (%s) AND classificacao = 'Mocca'""",
+                                (estabelecimento.id,))
+                    resultado = cur.fetchone()
+                    if not resultado:
+                        print(f"Nenhum mocca encontrado")
+                    estabelecimento = self.buscar_estabelecimento_por_id(resultado[4])
+                    classificacao = self.buscar_classe_produto(resultado[3])
+                    mocca = Item(resultado[0], resultado[1], resultado[2], classificacao, estabelecimento)
+                    return mocca
+                except Exception as e:
+                    print(e)
+

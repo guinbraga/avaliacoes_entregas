@@ -26,9 +26,10 @@ def cadastrar_perguntas():
     if request.method == "GET":
         return render_template("cadastro_perguntas.html")
 
-# @app.route("pedidos")
-# rota que mostraria a lista de pedidos e daria a opção para avaliar. farei se estiver com tempo
-# e ânimo sobrando no domingo.
+@app.route("/pedidos")
+def mostrar_pedidos():
+    pedidos_avaliar = db.buscar_pedidos_para_avaliar()
+    return render_template("pedidos.html", pedidos = pedidos_avaliar)
 
 @app.route("/pedidos/avaliar/<int:id_pedido>", methods=["GET", "POST"])
 def avaliar_pedido(id_pedido):
@@ -85,7 +86,7 @@ def avaliar_pedido(id_pedido):
             respostas.append(resposta)
 
         db.salvar_avaliacao_atomica(avaliacao, respostas)
-        return redirect(f"/pedidos/avaliar/{id_pedido}", code=302)
+        return redirect("/pedidos", code=302)
 
 
 
