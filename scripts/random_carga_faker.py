@@ -1,7 +1,12 @@
 from faker import Faker
+import sys
+import os
 import random
-import psycopg
-from acesso_db import get_db_connection
+from datetime import datetime
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from app.dao.base import get_db_connection
 
 
 def criar_clientes_aleatorios(conn, n_clientes):

@@ -1,0 +1,8 @@
+-- INSERT INTO classificacoes (tipo_produto, classificacao_pai) VALUES ('Pizza', null);
+-- INSERT INTO classificacoes (tipo_produto, classificacao_pai) VALUES ('Margherita', 'Pizza');
+-- INSERT INTO classificacoes (tipo_produto, classificacao_pai) VALUES ('4 Queijos', 'Pizza');
+-- INSERT INTO classificacoes (tipo_produto, classificacao_pai) VALUES ('Frango com Catupiry', 'Pizza');
+--
+-- INSERT INTO classificacoes (tipo_produto, classificacao_pai) VALUES ('X-Salada', 'Hambúrguer');
+-- INSERT INTO classificacoes (tipo_produto, classificacao_pai) VALUES ('X-Bacon', 'Hambúrguer');
+-- INSERT INTO classificacoes (tipo_produto, classificacao_pai) VALUES ('X-Tudo', 'Hambúrguer');
