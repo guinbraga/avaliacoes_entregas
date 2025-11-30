@@ -1,0 +1,189 @@
+{% extends "bootstrap_template.html" %}
+
+{% block conteudo %}
+<div class="container-fluid mt-4">
+
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-3">
+            <h2 class="text-uppercase fw-bold border p-2 rounded text-center">Estabelecimentos</h2>
+        </div>
+
+        <div class="col-md-5 text-center">
+            <form action="{{ url_for('relatorios.dashboard') }}" method="GET" class="border p-2 rounded">
+                <span class="me-2 fw-bold">Categoria:</span>
+                <div class="btn-group" role="group" aria-label="Filtro de Categoria">
+
+                    <input type="radio" class="btn-check" name="categoria" id="cat_geral" value="geral" checked onchange="this.form.submit()">
+                    <label class="btn btn-outline-dark" for="cat_geral">Geral</label>
+
+                    <input type="radio" class="btn-check" name="categoria" id="cat_hamburg" value="Hamburgueria" {% if request.args.get('categoria') == 'Hamburgueria' %}checked{% endif %} onchange="this.form.submit()">
+                    <label class="btn btn-outline-dark" for="cat_hamburg">Hamburg.</label>
+
+                    <input type="radio" class="btn-check" name="categoria" id="cat_pizza" value="Pizzaria" {% if request.args.get('categoria') == 'Pizzaria' %}checked{% endif %} onchange="this.form.submit()">
+                    <label class="btn btn-outline-dark" for="cat_pizza">Pizza</label>
+
+                    <input type="radio" class="btn-check" name="categoria" id="cat_cafe" value="Cafeteria" {% if request.args.get('categoria') == 'Cafeteria' %}checked{% endif %} onchange="this.form.submit()">
+                    <label class="btn btn-outline-dark" for="cat_cafe">Café</label>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <input type="text" class="form-control rounded-pill" placeholder="Pesquisar estabelecimento..." disabled>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-9">
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted">Top 5 Média de Nota</h6>
+                            <canvas id="chartMaioresNotas"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted">Top 5 Adequação do Tempo de Preparo</h6>
+                            <canvas id="chartMelhorTempo"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted">Piores 5 Média de Nota</h6>
+                            <canvas id="chartPioresNotas"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted">Pior 5 Adequação do Tempo de Preparo</h6>
+                            <canvas id="chartPiorTempo"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-3">
+
+            <div class="card mb-4 text-white bg-dark shadow">
+                <div class="card-body text-center p-4">
+                    <h1 class="display-1 fw-bold">{{ qtd_acima_media }}</h1>
+                    <p class="lead mb-0">Estabelecimentos com nota acima de 3.5</p>
+                </div>
+            </div>
+
+            <div class="card border-dark shadow" style="height: 300px;"> <div class="card-header bg-transparent border-dark text-center">
+                    <h5 class="mb-0 text-uppercase fw-bold">Item Preferido</h5>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-center text-center">
+
+                    <h3 class="fw-bold text-primary">{{ item_preferido_nome }}</h3>
+                    <p> do estabelecimento<br><b>{{ item_preferido_est }}</b> </p>
+
+                    <hr class="w-25 mx-auto">
+                    <div>
+                        <span class="text-muted">Nota Média</span>
+                        <h2 class="display-4 fw-bold">{{ "%.2f" | format(item_preferido_nota) }}</h2>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Função auxiliar para criar gráficos horizontais padronizados
+    function criarGraficoHorizontal(canvasId, labels, dados, corBarra, maxEscala) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: dados,
+                    backgroundColor: corBarra,
+                    borderWidth: 1,
+                    barPercentage: 0.7
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { beginAtZero: true, max: maxEscala },
+                    y: {
+                        ticks: {
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            },
+                            color: '#333'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Renderização dos 4 Gráficos usando os dados do Python (Jinja2)
+
+    // 1. Maiores Notas (Cor: Verde/Azul)
+    criarGraficoHorizontal(
+        'chartMaioresNotas',
+        {{ labels_maiores_notas | tojson }},
+        {{ dados_maiores_notas | tojson }},
+        'rgba(75, 192, 192, 0.7)',
+            5
+    );
+
+    // 2. Melhor Tempo (Cor: Roxo)
+    criarGraficoHorizontal(
+        'chartMelhorTempo',
+        {{ labels_melhor_tempo | tojson }},
+        {{ dados_melhor_tempo | tojson }},
+        'rgba(153, 102, 255, 0.7)',
+            1
+    );
+
+    // 3. Piores Notas (Cor: Vermelho)
+    criarGraficoHorizontal(
+        'chartPioresNotas',
+        {{ labels_piores_notas | tojson }},
+        {{ dados_piores_notas | tojson }},
+        'rgba(255, 99, 132, 0.7)',
+            5
+    );
+
+    // 4. Pior Tempo (Cor: Laranja)
+    criarGraficoHorizontal(
+        'chartPiorTempo',
+        {{ labels_pior_tempo | tojson }},
+        {{ dados_pior_tempo | tojson }},
+        'rgba(255, 159, 64, 0.7)',
+            1
+    );
+
+</script>
+
+{% endblock %}

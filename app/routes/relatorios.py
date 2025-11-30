@@ -1,20 +1,63 @@
 # app/routes/relatorios.py
-from flask import render_template, Blueprint
+from flask import render_template, Blueprint, request
 from app.dao.relatorios_dao.rel_estabelecimentos_dao import RelEstabelecimentosDao
 
 bp = Blueprint('relatorios', __name__)
+pergunta_nota_estabelecimento = "Qual nota você dá para o estabelecimento?"
+pergunta_tempo_preparo = "O tempo de preparo do seu pedido foi adequado?"
+
+# Em app/routes/relatorios.py
 
 @bp.route("/dashboard")
 def dashboard():
     dao = RelEstabelecimentosDao()
-    dados_top_produtos = dao.top_5_nota_1_5(("Qual nota você dá para o estabelecimento?",))
 
-    labels_produtos = [linha[1] for linha in dados_top_produtos]
+    # 1. Pegar filtro da URL (preparando para o futuro)
+    categoria_selecionada = request.args.get('categoria', 'geral')
 
-    valores_produtos = [linha[0] for linha in dados_top_produtos]
+    # 2. Dados Fictícios (Substitua pelos métodos do seu DAO futuramente)
+
+    # Gráfico 1: Maiores Notas
+    dados_m_notas_brutos = dao.top_5_nota_1_5((pergunta_nota_estabelecimento,))
+    labels_maiores_notas = [dado[1] for dado in dados_m_notas_brutos]
+    dados_maiores_notas = [dado[0] for dado in dados_m_notas_brutos]
+
+    # Gráfico 2: Melhor Percepção de Tempo
+    dados_mt_brutos = dao.top_5_prop_sim_nao((pergunta_tempo_preparo,))
+    labels_melhor_tempo = [dado[1] for dado in dados_mt_brutos]
+    dados_melhor_tempo = [dado[0] for dado in dados_mt_brutos]
+
+    # Gráfico 3: Piores Notas
+    dados_p_notas_brutos = dao.pior_5_nota_1_5((pergunta_nota_estabelecimento,))
+    labels_piores_notas = [dado[1] for dado in dados_p_notas_brutos]
+    dados_piores_notas = [dado[0] for dado in dados_p_notas_brutos]
+
+    # Gráfico 4: Pior Tempo
+    dados_pt_brutos = dao.pior_5_prop_sim_nao((pergunta_tempo_preparo,))
+    labels_pior_tempo = [dado[1] for dado in dados_pt_brutos]
+    dados_pior_tempo = [dado[0] for dado in dados_pt_brutos]
+
+    # KPIs
+    qtd_acima_media = dao.count_est_acima((3.5,))
+
+    dados_item_preferido = dao.melhor_item()
+    item_preferido_nome = dados_item_preferido[0]
+    item_preferido_est = dados_item_preferido[1]
+    item_preferido_nota = dados_item_preferido[2]
 
     return render_template(
-        "dashboard.html",
-        labels_grafico_1=labels_produtos,
-        valores_grafico_1=valores_produtos
+        "relatorios/dashboard.html",
+        # Passando as variáveis
+        labels_maiores_notas=labels_maiores_notas,
+        dados_maiores_notas=dados_maiores_notas,
+        labels_melhor_tempo=labels_melhor_tempo,
+        dados_melhor_tempo=dados_melhor_tempo,
+        labels_piores_notas=labels_piores_notas,
+        dados_piores_notas=dados_piores_notas,
+        labels_pior_tempo=labels_pior_tempo,
+        dados_pior_tempo=dados_pior_tempo,
+        qtd_acima_media=qtd_acima_media,
+        item_preferido_nome=item_preferido_nome,
+        item_preferido_nota=item_preferido_nota,
+        item_preferido_est=item_preferido_est,
     )

@@ -120,3 +120,29 @@ WHERE prg.enunciado_pergunta = (%s)
 GROUP BY e.id_estabelecimento
 ORDER BY prop_sim
 LIMIT 5;"""
+
+EST_NOTA_ACIMA = """
+SELECT COUNT(*) FROM
+	(SELECT e.nome, AVG(r.valor_resposta :: integer) as nota_media
+	FROM estabelecimentos e
+	JOIN pedidos p ON e.id_estabelecimento = p.id_estabelecimento
+	JOIN avaliacoes a ON a.id_pedido = p.id_pedido
+	JOIN respostas r ON r.id_avaliacao = a.id_avaliacao
+	JOIN perguntas prg ON r.id_pergunta = prg.id_pergunta
+	WHERE prg.enunciado_pergunta = 'Qual nota você dá para o estabelecimento?'
+	GROUP BY e.id_estabelecimento)
+WHERE nota_media > (%s)
+"""
+
+MELHOR_ITEM = """
+SELECT i.nome, e.nome, AVG(r.valor_resposta :: integer) AS nota_media
+FROM itens i
+JOIN estabelecimentos e ON i.id_estabelecimento = e.id_estabelecimento
+JOIN itens_pedido ip ON i.id_item = ip.id_item
+JOIN respostas r ON r.id_item_pedido = ip.id_item_pedido
+JOIN perguntas p ON p.id_pergunta = r.id_pergunta
+WHERE p.enunciado_pergunta = 'O quão gostoso estava esse item?'
+GROUP BY i.nome, e.nome
+ORDER BY nota_media DESC
+LIMIT 1
+"""
