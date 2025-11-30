@@ -13,34 +13,49 @@ def dashboard():
     dao = RelEstabelecimentosDao()
 
     # 1. Pegar filtro da URL (preparando para o futuro)
-    categoria_selecionada = request.args.get('categoria', 'geral')
+    categoria_arg = request.args.get('categoria')
 
-    # 2. Dados Fictícios (Substitua pelos métodos do seu DAO futuramente)
+    if not categoria_arg or categoria_arg == 'geral':
+        categoria_selecionada = None
+
+    else:
+        categoria_selecionada = categoria_arg
 
     # Gráfico 1: Maiores Notas
-    dados_m_notas_brutos = dao.top_5_nota_1_5((pergunta_nota_estabelecimento,))
+    dados_m_notas_brutos = dao.top_5_nota_1_5(
+        enunciado_pergunta=pergunta_nota_estabelecimento,
+        categoria=categoria_selecionada
+    )
     labels_maiores_notas = [dado[1] for dado in dados_m_notas_brutos]
     dados_maiores_notas = [dado[0] for dado in dados_m_notas_brutos]
 
     # Gráfico 2: Melhor Percepção de Tempo
-    dados_mt_brutos = dao.top_5_prop_sim_nao((pergunta_tempo_preparo,))
+    dados_mt_brutos = dao.top_5_prop_sim_nao(
+        enunciado_pergunta=pergunta_tempo_preparo,
+        categoria=categoria_selecionada
+    )
     labels_melhor_tempo = [dado[1] for dado in dados_mt_brutos]
     dados_melhor_tempo = [dado[0] for dado in dados_mt_brutos]
 
     # Gráfico 3: Piores Notas
-    dados_p_notas_brutos = dao.pior_5_nota_1_5((pergunta_nota_estabelecimento,))
+    dados_p_notas_brutos = dao.pior_5_nota_1_5(
+        enunciado_pergunta=pergunta_nota_estabelecimento,
+        categoria=categoria_selecionada
+    )
     labels_piores_notas = [dado[1] for dado in dados_p_notas_brutos]
     dados_piores_notas = [dado[0] for dado in dados_p_notas_brutos]
 
     # Gráfico 4: Pior Tempo
-    dados_pt_brutos = dao.pior_5_prop_sim_nao((pergunta_tempo_preparo,))
+    dados_pt_brutos = dao.pior_5_prop_sim_nao(
+        enunciado_pergunta=pergunta_tempo_preparo,
+        categoria=categoria_selecionada)
     labels_pior_tempo = [dado[1] for dado in dados_pt_brutos]
     dados_pior_tempo = [dado[0] for dado in dados_pt_brutos]
 
     # KPIs
-    qtd_acima_media = dao.count_est_acima((3.5,))
-
-    dados_item_preferido = dao.melhor_item()
+    qtd_acima_media = dao.count_est_acima(3.5, categoria_selecionada)
+    total_estabelecimentos = dao.total_estabelecimentos(categoria_selecionada)
+    dados_item_preferido = dao.melhor_item(categoria_selecionada)
     item_preferido_nome = dados_item_preferido[0]
     item_preferido_est = dados_item_preferido[1]
     item_preferido_nota = dados_item_preferido[2]
@@ -60,4 +75,5 @@ def dashboard():
         item_preferido_nome=item_preferido_nome,
         item_preferido_nota=item_preferido_nota,
         item_preferido_est=item_preferido_est,
+        total_estabelecimentos=total_estabelecimentos,
     )

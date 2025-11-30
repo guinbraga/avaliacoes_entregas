@@ -129,20 +129,64 @@ SELECT COUNT(*) FROM
 	JOIN avaliacoes a ON a.id_pedido = p.id_pedido
 	JOIN respostas r ON r.id_avaliacao = a.id_avaliacao
 	JOIN perguntas prg ON r.id_pergunta = prg.id_pergunta
+
 	WHERE prg.enunciado_pergunta = 'Qual nota você dá para o estabelecimento?'
 	GROUP BY e.id_estabelecimento)
 WHERE nota_media > (%s)
 """
 
+EST_NOTA_ACIMA_CAT = """
+SELECT COUNT(*) FROM
+	(SELECT e.nome, AVG(r.valor_resposta :: integer) as nota_media
+	FROM estabelecimentos e
+	JOIN pedidos p ON e.id_estabelecimento = p.id_estabelecimento
+	JOIN avaliacoes a ON a.id_pedido = p.id_pedido
+	JOIN respostas r ON r.id_avaliacao = a.id_avaliacao
+	JOIN perguntas prg ON r.id_pergunta = prg.id_pergunta
+    JOIN categorias_estabelecimento ce ON e.id_estabelecimento = ce.id_estabelecimento
+    JOIN categorias c ON c.id_categoria = ce.id_categoria
+	WHERE prg.enunciado_pergunta = 'Qual nota você dá para o estabelecimento?'  AND c.categoria = (%s)
+	GROUP BY e.id_estabelecimento)
+WHERE nota_media > (%s)
+"""
+
 MELHOR_ITEM = """
-SELECT i.nome, e.nome, AVG(r.valor_resposta :: integer) AS nota_media
-FROM itens i
-JOIN estabelecimentos e ON i.id_estabelecimento = e.id_estabelecimento
-JOIN itens_pedido ip ON i.id_item = ip.id_item
-JOIN respostas r ON r.id_item_pedido = ip.id_item_pedido
-JOIN perguntas p ON p.id_pergunta = r.id_pergunta
-WHERE p.enunciado_pergunta = 'O quão gostoso estava esse item?'
-GROUP BY i.nome, e.nome
-ORDER BY nota_media DESC
-LIMIT 1
+    SELECT i.nome, e.nome, AVG(r.valor_resposta :: integer) AS nota_media
+    FROM itens i
+    JOIN estabelecimentos e ON i.id_estabelecimento = e.id_estabelecimento
+    JOIN itens_pedido ip ON i.id_item = ip.id_item
+    JOIN respostas r ON r.id_item_pedido = ip.id_item_pedido
+    JOIN perguntas p ON p.id_pergunta = r.id_pergunta
+    WHERE p.enunciado_pergunta = 'O quão gostoso estava esse item?'
+    GROUP BY i.nome, e.nome
+    ORDER BY nota_media DESC
+    LIMIT 1
+"""
+
+MELHOR_ITEM_CAT = """
+    SELECT i.nome, e.nome, AVG(r.valor_resposta :: integer) AS nota_media
+    FROM itens i
+    JOIN estabelecimentos e ON i.id_estabelecimento = e.id_estabelecimento
+    JOIN itens_pedido ip ON i.id_item = ip.id_item
+    JOIN respostas r ON r.id_item_pedido = ip.id_item_pedido
+    JOIN perguntas p ON p.id_pergunta = r.id_pergunta
+    JOIN categorias_estabelecimento ce ON e.id_estabelecimento = ce.id_estabelecimento
+    JOIN categorias c ON c.id_categoria = ce.id_categoria
+    WHERE p.enunciado_pergunta = 'O quão gostoso estava esse item?' AND c.categoria = (%s)
+    GROUP BY i.nome, e.nome
+    ORDER BY nota_media DESC
+    LIMIT 1
+"""
+
+TOTAL_EST ="""
+    SELECT COUNT(*) 
+    FROM estabelecimentos e    
+"""
+
+TOTAL_EST_CAT = """
+    SELECT COUNT(*) 
+    FROM estabelecimentos e
+    JOIN categorias_estabelecimento ce ON e.id_estabelecimento = ce.id_estabelecimento
+    JOIN categorias c ON c.id_categoria = ce.id_categoria
+    WHERE c.categoria = (%s)
 """

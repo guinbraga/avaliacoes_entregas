@@ -1,4 +1,4 @@
-{% extends "bootstrap_template.html" %}
+ {% extends "bootstrap_template.html" %}
 
 {% macro render_card(href, icon_file, alt_text, titulo) %}
     <a href="{{ href }}" class="text-decoration-none mb-4 d-block">
@@ -33,9 +33,19 @@
         <div class="col-6">
             {{ render_card(
                 href="/cadastro/perguntas",
-                icon_file="perguntas_icon.svg",
+                icon_file="avaliacoes_icon.svg",
                 alt_text="Cadastrar Perguntas",
                 titulo = "Cadastrar Perguntas")
+            }}
+        </div>
+    </div>
+    <div class="row mt-4 justify-content-center">
+        <div class="col-6">
+            {{ render_card(
+                href="/dashboard",
+                icon_file="relatorio_icon.png",
+                alt_text="Visualizar Dashboard",
+                titulo = "Visualizar Dashboard")
             }}
         </div>
     </div>

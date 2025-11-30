@@ -14,7 +14,7 @@ from app.models.usuarios import Cliente, Entregador
 from app.models.estabelecimentos import Estabelecimento
 
 
-def popular_pedidos_massa():
+def popular_pedidos_massa(n):
     print("--- Iniciando População de Pedidos em Massa ---")
 
     pedidos_dao = PedidosDAO()
@@ -68,7 +68,7 @@ def popular_pedidos_massa():
                 print(f"  -> PULEI: {est.nome} não tem itens cadastrados.")
                 continue
 
-            for i in range(200):
+            for i in range(n):
 
                 cliente_sorteado = random.choice(lista_clientes)
                 entregador_sorteado = random.choice(lista_entregadores)
@@ -120,4 +120,4 @@ def popular_pedidos_massa():
 
 
 if __name__ == "__main__":
-    popular_pedidos_massa()
+    popular_pedidos_massa(10)
