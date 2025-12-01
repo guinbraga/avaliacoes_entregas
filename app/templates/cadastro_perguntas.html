@@ -3,58 +3,59 @@
 {% block conteudo %}
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-md-8 col-lg-6">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="fw-bold mb-0">Pedidos Pendentes</h2>
-                <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
-                    &larr; Voltar
-                </a>
-            </div>
-
-            {% if pedidos %}
             <div class="card shadow rounded-4 border-0">
-                <div class="card-body p-0">
-                    <div class="table-responsive rounded-4">
-                        <table class="table table-hover text-center mb-0 align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="py-3">ID</th>
-                                    <th class="py-3">Estabelecimento</th>
-                                    <th class="py-3">Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for pedido in pedidos %}
-                                <tr>
-                                    <td class="fw-bold text-muted">#{{ pedido.id }}</td>
-                                    <td class="fw-semibold">{{ pedido.estabelecimento.nome }}</td>
-                                    <td>
-                                        <a class="btn btn-primary btn-sm px-4 rounded-pill" href="/pedidos/avaliar/{{pedido.id}}">
-                                            Avaliar
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="card-header bg-primary text-white text-center py-3 rounded-top-4">
+                    <h4 class="mb-0 fw-bold">Cadastrar Nova Pergunta</h4>
+                </div>
+
+                <div class="card-body p-4 bg-light">
+                    <form method="POST">
+
+                        <div class="mb-3">
+                            <label for="enunciado_pergunta" class="form-label fw-bold">Enunciado da Pergunta</label>
+                            <input type="text"
+                                   id="enunciado_pergunta"
+                                   name="enunciado_pergunta"
+                                   class="form-control"
+                                   placeholder="Ex: O que achou da temperatura da comida?"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tipo_resposta" class="form-label fw-bold">Tipo da resposta</label>
+                            <select id="tipo_resposta" name="tipo_resposta" class="form-select">
+                                <option value="" selected disabled>Selecione um tipo...</option>
+                                <option value="nota_1_5">Nota 1 - 5</option>
+                                <option value="select_tag">Selecionar Tags</option>
+                                <option value="texto_descritivo">Texto Descritivo</option>
+                                <option value="sim_nao">Sim/Não</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="alvo_avaliacao" class="form-label fw-bold">Alvo da Avaliação</label>
+                            <select id="alvo_avaliacao" name="alvo_avaliacao" class="form-select">
+                                <option value="" selected disabled>Selecione o alvo...</option>
+                                <option value="item">Item do pedido</option> <option value="estabelecimento">Estabelecimento</option>
+                                <option value="entregador">Entregador</option>
+                                <option value="aplicativo">Aplicativo</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                Cadastrar Pergunta
+                            </button>
+                            <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+                                Voltar
+                            </a>
+                        </div>
+
+                    </form>
                 </div>
             </div>
-
-            {% else %}
-            <div class="card shadow-sm border-0 rounded-4 mt-4">
-                <div class="card-body text-center py-5">
-                    <h1 class="display-4 mb-3">🎉</h1>
-                    <h3 class="text-muted fw-normal">Sem pedidos para avaliar!</h3>
-                    <p class="text-muted">Você já avaliou todos os seus pedidos pendentes.</p>
-                    <a href="{{ url_for('main.index') }}" class="btn btn-primary mt-3">
-                        Voltar ao Início
-                    </a>
-                </div>
-            </div>
-            {% endif %}
-
         </div>
     </div>
 </div>
