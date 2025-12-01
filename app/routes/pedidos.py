@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template
 from app.dao import PedidosDAO
 
 bp = Blueprint('pedidos', __name__)

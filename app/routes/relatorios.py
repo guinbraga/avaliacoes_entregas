@@ -1,4 +1,3 @@
-# app/routes/relatorios.py
 from flask import render_template, Blueprint, request
 from app.dao.relatorios_dao.rel_estabelecimentos_dao import RelEstabelecimentosDao
 
@@ -6,13 +5,11 @@ bp = Blueprint('relatorios', __name__)
 pergunta_nota_estabelecimento = "Qual nota você dá para o estabelecimento?"
 pergunta_tempo_preparo = "O tempo de preparo do seu pedido foi adequado?"
 
-# Em app/routes/relatorios.py
 
 @bp.route("/dashboard")
 def dashboard():
     dao = RelEstabelecimentosDao()
 
-    # 1. Pegar filtro da URL (preparando para o futuro)
     categoria_arg = request.args.get('categoria')
 
     if not categoria_arg or categoria_arg == 'geral':
@@ -62,7 +59,6 @@ def dashboard():
 
     return render_template(
         "relatorios/dashboard.html",
-        # Passando as variáveis
         labels_maiores_notas=labels_maiores_notas,
         dados_maiores_notas=dados_maiores_notas,
         labels_melhor_tempo=labels_melhor_tempo,
